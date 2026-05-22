@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NoteNest</title>
+
+  <style>
+
+    body{
+      font-family: Arial, sans-serif;
+      margin:0;
+      padding:0;
+      background:#f4f6f9;
+    }
+
+    header{
+      background:#1e293b;
+      color:white;
+      padding:15px 30px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .container{
+      width:90%;
+      margin:auto;
+      margin-top:20px;
+    }
+
+    .box{
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      margin-bottom:20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    input, textarea, select{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      margin-bottom:10px;
+      border-radius:5px;
+      border:1px solid #ccc;
+    }
+
+    button{
+      padding:10px 15px;
+      border:none;
+      border-radius:5px;
+      background:#2563eb;
+      color:white;
+      cursor:pointer;
+      margin-right:10px;
+    }
+
+    .delete-btn{
+      background:#dc2626;
+    }
+
+    .edit-btn{
+      background:#16a34a;
+    }
+
+    .archive-btn{
+      background:#9333ea;
+    }
+
+    .notes-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+    }
+
+    .note-card{
+      padding:15px;
+      border-radius:10px;
+      background:#fff8b3;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .actions{
+      margin-top:15px;
+    }
+
+    .badge{
+      background:#0f172a;
+      color:white;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      margin-right:5px;
+    }
+
+    footer{
+      text-align:center;
+      padding:20px;
+      color:#555;
+      margin-top:30px;
+    }
+
+    input[type="checkbox"]{
+  width:auto;
+}
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- HEADER -->
+
+  <header>
+
+    <h2>📝 NoteNest</h2>
+
+    <div>
+      <span class="badge">Dark Mode</span>
+      <span class="badge">Pinned Notes</span>
+      <span class="badge">Custom Theme</span>
+
+      <button>Logout</button>
+    </div>
+
+  </header>
+
+
+  <div class="container">
+
+    <!-- LOGIN SECTION -->
+
+    <div class="box">
+
+      <h2>Login / Signup</h2>
+
+      <input type="text" placeholder="Enter Your Name">
+
+      <input type="email" placeholder="Enter Your Email">
+
+      <input type="password" placeholder="Enter Password">
+
+      <button>Signup</button>
+      <button>Login</button>
+
+    </div>
+
+
+    <!-- USER PROFILE -->
+
+    <div class="box">
+
+      <h2>👤 User Profile</h2>
+
+      <p><strong>Name:</strong> Padhaku Singh</p>
+
+      <p><strong>Email:</strong> padhaku@gmail.com</p>
+
+      <p><strong>Member Since:</strong> May 2026</p>
+
+    </div>
+
+
+    <!-- NOTES STATISTICS -->
+
+    <div class="box">
+
+      <h2>📊 Notes Statistics</h2>
+
+      <p>Total Notes: 12</p>
+
+      <p>Pinned Notes: 4</p>
+
+      <p>Archived Notes: 2</p>
+
+      <p>Completed Tasks: 6</p>
+
+    </div>
+
+
+    <!-- PERSONALIZATION SETTINGS -->
+
+    <div class="box">
+
+      <h2>🎨 Personalization Settings</h2>
+
+      <label for="theme-color-select">Select Theme Color</label>
+
+      <select id="theme-color-select" title="Select Theme Color">
+        <option>Yellow</option>
+        <option>Blue</option>
+        <option>Green</option>
+        <option>Pink</option>
+      </select>
+
+      <label for="font-style-select">Select Font Style</label>
+
+      <select id="font-style-select" title="Select Font Style">
+        <option>Arial</option>
+        <option>Poppins</option>
+        <option>Courier New</option>
+      </select>
+
+      <label for="notes-view-select">Choose Notes View</label>
+
+      <select id="notes-view-select" title="Choose Notes View">
+        <option>Grid View</option>
+        <option>List View</option>
+      </select>
+    </div>
+
+    <!-- CREATE NOTE -->
+
+    <div class="box">
+
+      <h2>Create New Note</h2>
+
+      <input type="text" placeholder="Enter Note Title">
+
+      <textarea rows="5" placeholder="Write your note here..."></textarea>
+
+      <label>Select Category</label>
+
+      <select aria-label="Select Category">
+        <option>Study</option>
+        <option>Work</option>
+        <option>Personal</option>
+        <option>Ideas</option>
+      </select>
+
+      <label>Select Note Color</label>
+
+      <select aria-label="Select Note Color">
+        <option>Yellow</option>
+        <option>Blue</option>
+        <option>Green</option>
+        <option>Pink</option>
+      </select>
+
+      <label align-items:center >
+         Pin this note
+        <input type="checkbox">
+      </label>
+       <br>
+      <button>Save Note</button>
+
+    </div>
+
+    <!-- REMINDER SECTION -->
+
+    <div class="box">
+
+      <h2>⏰ Set Reminder</h2>
+      <input type="text" placeholder="Enter Note Title">
+      <label>
+        Reminder Date:
+        <input type="date">
+      </label>
+
+      <label>
+        Reminder Time:
+        <input type="time">
+      </label>
+
+      <button>Save Reminder</button>
+
+    </div>
+
+    <!-- SEARCH NOTES -->
+
+    <div class="box">
+
+      <h2>🔍 Search Notes</h2>
+
+      <input type="text" placeholder="Search your notes here...">
+
+    </div>
+
+    <!-- YOUR NOTES -->
+
+    <h2>Your Notes</h2>
+
+    <div class="notes-grid">
+
+      <!-- NOTE 1 -->
+
+      <div class="note-card">
+
+        <h3>DSA Practice Schedule</h3>
+
+        <p>
+          Complete 5 array problems and revise binary search concepts before 8 PM.
+        </p>
+
+        <small>📌 Priority Task</small>
+
+        <div class="actions">
+
+        <button class="edit-btn">Edit</button>
+
+        <button class="delete-btn">Delete</button>
+
+        <button class="archive-btn">Archive</button>
+
+        </div>
+
+      </div>
+
+    <!-- NOTE 2 -->
+
+      <div class="note-card">
+
+        <h3>Frontend Project Tasks</h3>
+
+        <p>
+          Design responsive navbar and connect login page with backend API.
+        </p>
+
+        <small>⭐ Favorite Project</small>
+
+        <div class="actions">
+
+          <button class="edit-btn">Edit</button>
+
+          <button class="delete-btn">Delete</button>
+
+          <button class="archive-btn">Archive</button>
+
+        </div>
+
+      </div>
+
+      <!-- NOTE 3 -->
+
+      <div class="note-card" >
+
+        <h3>Cloud Learning Goals</h3>
+
+        <p>
+          Learn basics of Docker containers and complete Linux command practice.
+        </p>
+
+        <small>⏰ Reminder Enabled</small>
+
+        <div class="actions">
+
+          <button class="edit-btn">Edit</button>
+
+          <button class="delete-btn">Delete</button>
+
+          <button class="archive-btn">Archive</button>
+
+        </div>
+
+      </div>
+
+      <!-- NOTE 4 -->
+
+      <div class="note-card" >
+
+        <h3>Hackathon Preparation</h3>
+
+        <p>
+          Finalize AI idea presentation and prepare project workflow diagram.
+        </p>
+
+        <small>🚀 Upcoming Event</small>
+
+        <div class="actions">
+
+          <button class="edit-btn">Edit</button>
+
+          <button class="delete-btn">Delete</button>
+
+          <button class="archive-btn">Archive</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY NOTES MESSAGE -->
+
+    <div class="box">
+
+      <h2>🧐 Empty Notes Section</h2>
+
+      <p>
+        You currently have no deleted notes available.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    © 2026 NoteNest | Personalized Notes Web App
+
+  </footer>
+
+</body>
+
+</html>
