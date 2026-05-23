@@ -7,107 +7,9 @@
 
   <title>NoteNest</title>
 
-  <style>
+  <link rel="stylesheet" href="style.css">
 
-    body{
-      font-family: Arial, sans-serif;
-      margin:0;
-      padding:0;
-      background:#f4f6f9;
-    }
-
-    header{
-      background:#1e293b;
-      color:white;
-      padding:15px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .container{
-      width:90%;
-      margin:auto;
-      margin-top:20px;
-    }
-
-    .box{
-      background:white;
-      padding:20px;
-      border-radius:10px;
-      margin-bottom:20px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    input, textarea, select{
-      width:100%;
-      padding:10px;
-      margin-top:10px;
-      margin-bottom:10px;
-      border-radius:5px;
-      border:1px solid #ccc;
-    }
-
-    button{
-      padding:10px 15px;
-      border:none;
-      border-radius:5px;
-      background:#2563eb;
-      color:white;
-      cursor:pointer;
-      margin-right:10px;
-    }
-
-    .delete-btn{
-      background:#dc2626;
-    }
-
-    .edit-btn{
-      background:#16a34a;
-    }
-
-    .archive-btn{
-      background:#9333ea;
-    }
-
-    .notes-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:20px;
-    }
-
-    .note-card{
-      padding:15px;
-      border-radius:10px;
-      background:#fff8b3;
-      box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .actions{
-      margin-top:15px;
-    }
-
-    .badge{
-      background:#0f172a;
-      color:white;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      margin-right:5px;
-    }
-
-    footer{
-      text-align:center;
-      padding:20px;
-      color:#555;
-      margin-top:30px;
-    }
-
-    input[type="checkbox"]{
-  width:auto;
-}
-
-  </style>
+   
 
 </head>
 
@@ -173,11 +75,28 @@
 
       <p>Total Notes: 12</p>
 
-      <p>Pinned Notes: 4</p>
+      <div class="box">
 
-      <p>Archived Notes: 2</p>
 
-      <p>Completed Tasks: 6</p>
+   
+
+
+<p>Pinned Notes: 4</p>
+<div class="progress-bar">
+    <div class="progress pinned"></div>
+</div>
+
+<p>Archived Notes: 2</p>
+<div class="progress-bar">
+    <div class="progress archive"></div>
+</div>
+
+<p>Completed Tasks: 6</p>
+<div class="progress-bar">
+    <div class="progress complete"></div>
+</div>
+
+</div>
 
     </div>
 
@@ -409,3 +328,4 @@
 </body>
 
 </html>
+
