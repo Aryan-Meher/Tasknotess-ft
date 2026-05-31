@@ -184,8 +184,8 @@ button:hover {
 }
 
 .edit-btn { 
-  border-color: #22c55e;
-   color: #22c55e; 
+  border-color: #0d4e25;
+   color: #0d4e25; 
    background: transparent; }
 .edit-btn:hover {
    background: #22c55e; 
@@ -193,8 +193,8 @@ button:hover {
    box-shadow: 0 0 10px #22c55e; }
 
 .delete-btn { 
-  border-color: #ef4444; 
-  color: #ef4444; 
+  border-color: #7c0505; 
+  color: #7c0505; 
   background: transparent; }
 .delete-btn:hover { 
   background: #ef4444; 
@@ -202,8 +202,8 @@ button:hover {
   box-shadow: 0 0 10px #ef4444; }
 
 .archive-btn { 
-  border-color: #a855f7; 
-  color: #a855f7;
+  border-color: #2e0952; 
+  color: #2e0952;
    background: transparent !important; }
 .archive-btn:hover { 
   background: #a855f7 !important; 
