@@ -535,5 +535,30 @@ async function loginUser() {
       showToast("Login request failed: " + error.message);
     }
   }
+}
 
+async function logoutUser() {
+  try {
+    await fetchWithTimeout('http://localhost:5000/api/v1/auth/logout', {
+      method: 'GET',
+      credentials: 'include',
+    });
+  } catch (error) {
+    console.warn('Logout request failed:', error);
+  }
+
+  loggedIn = false;
+  document.getElementById('profile-name').innerText = 'Guest User';
+  document.getElementById('profile-email').innerText = 'Not Logged In';
+  document.getElementById('member-since').innerText = '';
+  document.getElementById('signup-name').value = '';
+  document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = '';
+  showToast('Logged out from NoteNest');
+
+  document.getElementById('dashboard-section').style.display = 'none';
+  document.getElementById('manager-section').style.display = 'none';
+  document.getElementById('account-section').style.display = 'block';
+
+  document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
 }
