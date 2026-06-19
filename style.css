@@ -55,8 +55,8 @@ nav {
 
 .nav-btn {
   background: rgba(139, 148, 163, 0.1);
-  border: 1px solid rgba(139, 148, 163, 0.3);
-  color: #8b94A3;
+  border: 2px solid rgba(139, 148, 163, 0.3);
+  color:#1f2937;
   padding: 8px 18px;
   border-radius: 6px;
   font-family: monospace;
