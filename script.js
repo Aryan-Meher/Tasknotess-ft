@@ -215,23 +215,19 @@ function completeTask(button){
 
   noteCard.remove();
 
-  document.getElementById("completed-notes" ).innerText = completedTasks;
-
-
   showToast( "✅ Mission completed! Productivity level increased");
 
 }
 
 function toggleArchive(){
 
-  let archiveSection =document.getElementById( "archive-container" );
-  if( archiveSection.style.display === "none"){
-    archiveSection.style.display = "grid";
-  }
+  let archiveSection = document.getElementById("archive-container");
 
+  if(archiveSection.style.display === "none" || archiveSection.style.display === ""){
+    archiveSection.style.display = "block";
+  }
   else{
-    archiveSection.style.display =
-    "none";
+    archiveSection.style.display = "none";
   }
 
 }
