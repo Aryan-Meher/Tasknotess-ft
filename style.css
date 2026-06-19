@@ -55,8 +55,8 @@ nav {
 
 .nav-btn {
   background: rgba(139, 148, 163, 0.1);
-  border: 1px solid rgba(139, 148, 163, 0.3);
-  color: #8b94A3;
+  border: 2px solid rgba(139, 148, 163, 0.3);
+  color:#1f2937;
   padding: 8px 18px;
   border-radius: 6px;
   font-family: monospace;
@@ -257,6 +257,10 @@ button:hover {
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow-wrap:break-word;
   
 }
 .Yellow{
@@ -344,56 +348,6 @@ button:hover {
 
  input[type="checkbox"]{
   width:auto;
-}
-
-
-
-
-
-.pinned{
-  width:45%;
-  background:linear-gradient(90deg,#22c55e,#86efac);
-}
-
-.archive{
-  width:25%;
-  background:linear-gradient(90deg,#a855f7,#d8b4fe);
-}
-
-.complete{
-  width:65%;
-  background:linear-gradient(90deg,#f59e0b,#fde68a);
-}
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(139, 148, 163, 0.2);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 10px 0 20px;
-}
-
-.progress {
-  height: 100%;
-  animation: fillTelemetry 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.pinned { 
-  --target-width: 45%; 
-  background: #FF8811; 
-  box-shadow: 0 0 8px #FF8811; }
-.archive {
-   --target-width: 25%; 
-   background: #8B94A3; }
-.complete { 
-  --target-width: 65%; 
-  background: #FBFFF1; 
-  box-shadow: 0 0 8px #FBFFF1; }
-
-@keyframes fillTelemetry {
-  from { width: 0%; }
-  to { width: (--target-width); }
 }
 
 ::-webkit-scrollbar{
@@ -604,6 +558,35 @@ footer {
   font-family: monospace;
   font-size: 0.8rem;
   letter-spacing: 1px;
+}
+#archive-container{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+
+.archive-box{
+  display:block !important;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.archive-header{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+@media(max-width:768px){
+
+  #archive-container{
+    grid-template-columns:1fr;
+  }
+
 }
 #manager-section,
 #account-section{
