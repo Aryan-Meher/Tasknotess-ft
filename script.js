@@ -363,7 +363,14 @@ function signupUser(){
 
   document.getElementById("profile-email").innerText = email;
 
-  document.getElementById("member-since").innerText = "May 2026";
+  let today = new Date();
+
+  let memberSince = today.toLocaleString("en-US", {
+  month: "long",
+  year: "numeric"
+  });
+
+document.getElementById("member-since").innerText = memberSince;
 
   loggedIn = true;
 
@@ -397,7 +404,14 @@ function loginUser(){
 
   document.getElementById("profile-email").innerText = email;
 
-  document.getElementById("member-since").innerText = "May 2026";
+  let today = new Date();
+
+  let memberSince = today.toLocaleString("en-US", {
+  month: "long",
+  year: "numeric"
+  });
+
+document.getElementById("member-since").innerText = memberSince;
 
   loggedIn = true;
 
