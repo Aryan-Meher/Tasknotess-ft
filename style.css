@@ -257,6 +257,10 @@ button:hover {
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow-wrap:break-word;
   
 }
 .Yellow{
@@ -554,6 +558,35 @@ footer {
   font-family: monospace;
   font-size: 0.8rem;
   letter-spacing: 1px;
+}
+#archive-container{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+
+.archive-box{
+  display:block !important;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.archive-header{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+@media(max-width:768px){
+
+  #archive-container{
+    grid-template-columns:1fr;
+  }
+
 }
 #manager-section,
 #account-section{
