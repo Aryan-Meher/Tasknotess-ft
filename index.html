@@ -160,48 +160,6 @@
 
     <div id="manager-section">
 
-
-      <!-- NOTES STATISTICS -->
-
-      <div class="box1">
-
-        <h2>Notes Statistics</h2>
-
-        <p>Total Notes:<span id="total-notes">4</span></p>
-
-        <div class="box1">
-
-          <p>Pinned Notes:<span id="pinned-notes">1</span></p>
-
-          <div class="progress-bar">
-
-            <div class="progress pinned"></div>
-
-          </div>
-
-
-          <p>Archived Notes:<span id="archived-count">0</span></p>
-
-          <div class="progress-bar">
-
-            <div class="progress archive"></div>
-
-          </div>
-
-          <p>Completed Tasks:<span id="completed-notes">0</span></p>
-
-          <div class="progress-bar">
-
-            <div class="progress complete"></div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
       <!-- CREATE NOTE -->
 
       <div class="box1">
@@ -257,7 +215,7 @@
 
         </select>
 
-       <button onclick="saveNote()">Save Note</button>
+       <button onclick="addNote()">Save Note</button>
 
       </div>
 
@@ -308,7 +266,7 @@
       <h4> Search Notes</h4>
   
   <!-- Search Input Field -->
-  <input type="text" id="search-input" class="search-input" placeholder="Search your notes..." oninput="searchNotes(this.value)">
+  <input type="text"id="search-input"class="search-input"placeholder="Search your notes..."onkeyup="searchNotes(this.value)">
 </div>
 
 
@@ -470,7 +428,7 @@
 
       <!-- ARCHIEVED NOTES MESSAGE -->
 
-      <div class="box">
+      <div class="box archive-box">
         <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="archive-icon">
         <!-- Top lid of the box -->
         <polyline points="21 8 21 3 3 3 3 8"></polyline>

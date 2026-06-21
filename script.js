@@ -1,15 +1,3 @@
-// Helper function to add timeout to fetch requests
-async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
@@ -35,8 +23,7 @@ function showSection(sectionId, button){
 
 }
 let loggedIn = false;
-let completedTasks = 0;
-let archivedNotes = 0;
+
 function addNote(){
 
   let title =document.getElementById("note-title").value;
@@ -81,58 +68,6 @@ showToast("🔥 Boom! Your note just entered the NoteNest universe , Note captur
 
   document.getElementById("note-text").value = "";
 
-
-  updateStatistics();
-}
-
-function getAuthToken() {
-}
-
-function getAuthHeaders() {
-  return { 'Content-Type': 'application/json' };
-}
-
-async function saveNote() {
-  const title = document.getElementById("note-title").value.trim();
-  const content = document.getElementById("note-text").value.trim();
-  const tag = document.getElementById("note-tag").value;
-  const color = document.getElementById("note-color").value;
-
-  if (!title || !content) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  try {
-    const response = await fetchWithTimeout("http://localhost:5000/api/v1/notes", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      credentials: 'include',
-      body: JSON.stringify({
-        title,
-        content,
-        tag,
-        color,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || errorData.error || "Unable to save note");
-    }
-
-    await response.json();
-    addNote();
-  } catch (error) {
-    console.error("Save failed:", error);
-    if (error.name === 'AbortError') {
-      showToast("⚠️ Backend not responding. Note saved locally only.");
-      addNote();
-    } else {
-      showToast("Save failed: " + error.message);
-    }
-    alert("Could not save note: " + error.message);
-  }
 }
 
 function showToast(message){
@@ -170,7 +105,6 @@ function deleteNote(button){
   noteCard.remove();
 
   showToast("🗑️ Poof! Your note vanished into the NoteNest blackhole ");
- updateStatistics();
 }
 
 function searchNotes(){
@@ -274,30 +208,6 @@ function saveEditedNote(button){
 
 }
 
-function updateStatistics(){
-
-  let allNotes = document.querySelectorAll(".note-card");
-
-  let totalNotes = allNotes.length;
-
-  let pinnedNotes = 0;
-
-  allNotes.forEach(function(note){
-    let tag = note.querySelector(".note-tag").innerText;
-
-    if(tag.includes("📌")){
-
-      pinnedNotes++;
-
-    }
-
-  });
-
-  document.getElementById( "total-notes" ).innerText = totalNotes;
-
-  document.getElementById( "pinned-notes" ).innerText = pinnedNotes;
-
-}
 
 function completeTask(button){
 
@@ -305,28 +215,19 @@ function completeTask(button){
 
   noteCard.remove();
 
-  completedTasks++;
-
-  document.getElementById("completed-notes" ).innerText = completedTasks;
-
-  updateStatistics();
-
   showToast( "✅ Mission completed! Productivity level increased");
 
 }
-updateStatistics();
-
 
 function toggleArchive(){
 
-  let archiveSection =document.getElementById( "archive-container" );
-  if( archiveSection.style.display === "none"){
-    archiveSection.style.display = "grid";
-  }
+  let archiveSection = document.getElementById("archive-container");
 
+  if(archiveSection.style.display === "none" || archiveSection.style.display === ""){
+    archiveSection.style.display = "block";
+  }
   else{
-    archiveSection.style.display =
-    "none";
+    archiveSection.style.display = "none";
   }
 
 }
@@ -442,9 +343,12 @@ function setReminder(){
 
 }
 
-async function signupUser(){
+function signupUser(){
+
   let name = document.getElementById("signup-name").value;
+
   let email = document.getElementById("signup-email").value;
+
   let password = document.getElementById("signup-password").value;
 
   if(name === "" || email === "" || password === ""){
@@ -452,180 +356,108 @@ async function signupUser(){
     return;
   }
 
-  try {
-    const response = await fetchWithTimeout("http://localhost:5000/api/v1/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: name,
-        email,
-        password,
-      }),
-    });
+  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      showToast("Signup failed: " + (data.error || data.message || "Try again"));
-      return;
-    }
-
-    document.getElementById("profile-name").innerText = data.data?.username || name;
-    document.getElementById("profile-email").innerText = data.data?.email || email;
-    document.getElementById("member-since").innerText = "Member since now";
-    let isLoggingIn = false;
-
-async function loginUser() {
-  if (isLoggingIn) return;
-
-  // 1. Fixed: Target login elements instead of signup elements, and trim inputs
-  const emailInput = document.getElementById("login-email"); // Check your HTML for this ID
-  const passwordInput = document.getElementById("login-password"); // Check your HTML for this ID
-  const loginBtn = document.getElementById("login-submit-btn"); // Optional button selector
-
-  const email = emailInput?.value.trim();
-  const password = passwordInput?.value;
-
-  if (!email || !password) {
-    showToast("⚠️ Enter email and password");
+  if(!emailRegex.test(email)){
+    showToast("⚠️ Please enter a valid email address");
     return;
   }
 
-  try {
-    isLoggingIn = true;
-    if (loginBtn) loginBtn.disabled = true;
+  document.getElementById("profile-name").innerText = name;
+  document.getElementById("profile-email").innerText = email;
 
-    const response = await fetchWithTimeout("http://localhost:5000/api/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
+  let today = new Date();
 
-    const data = await response.json();
+  let memberSince = today.toLocaleString("en-US", {
+    month: "long",
+    year: "numeric"
+  });
 
-    if (!response.ok) {
-      showToast("Login failed: " + (data.error || data.message || "Try again"));
-      return;
-    }
+  document.getElementById("member-since").innerText = memberSince;
 
-    
-    document.getElementById("profile-name").innerText = data.data?.username || "User";
-    document.getElementById("profile-email").innerText = data.data?.email || email;
-    
-    
-    const memberDate = data.data?.createdAt ? new Date(data.data.createdAt).getFullYear() : new Date().getFullYear();
-    document.getElementById("member-since").innerText = `Member since ${memberDate}`;
-    
-    loggedIn = true;
-    showToast("✅ Logged in successfully");
+  loggedIn = true;
 
-    
-    if (emailInput) emailInput.value = "";
-    if (passwordInput) passwordInput.value = "";
-    
-  } catch (error) {
-    console.error("Login failed:", error);
-    if (error.name === 'AbortError') {
-      showToast("⚠️ Backend not responding. Check if server is running.");
-    } else {
-      showToast("Login request failed: " + error.message);
-    }
-  } finally {
-    isLoggingIn = false;
-    if (loginBtn) loginBtn.disabled = false;
-  }
+  showToast("🎉 Welcome to NoteNest " + name);
+
+  document.getElementById("signup-name").value = "";
+  document.getElementById("signup-email").value = "";
+  document.getElementById("signup-password").value = "";
 }
 
+function loginUser(){
 
-    loggedIn = true;
-    showToast("🎉 Welcome to NoteNest " + name);
+  let name = document.getElementById("signup-name").value;
 
-    document.getElementById("signup-name").value = "";
-    document.getElementById("signup-email").value = "";
-    document.getElementById("signup-password").value = "";
-  } catch (error) {
-    console.error("Signup failed:", error);
-    if (error.name === 'AbortError') {
-      showToast("⚠️ Backend not responding. Check if server is running.");
-    } else {
-      showToast("Signup request failed: " + error.message);
-    }
+  let email = document.getElementById("signup-email").value;
+
+  let password = document.getElementById("signup-password").value;
+
+  if(name === "" || email === "" || password === ""){
+
+    showToast("⚠️ Enter all login details");
+
+    return;
+
   }
-}
+  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-async function loginUser() {
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-
-  if (!email || !password) {
-    showToast("⚠️ Enter email and password");
+  if(!emailRegex.test(email)){
+    showToast("⚠️ Please enter a valid email address");
     return;
   }
 
-  try {
-    const response = await fetchWithTimeout("http://localhost:5000/api/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
 
-    const data = await response.json();
+  document.getElementById("profile-name").innerText = name;
 
-    if (!response.ok) {
-      showToast("Login failed: " + (data.error || data.message || "Try again"));
-      return;
-    }
+  document.getElementById("profile-email").innerText = email;
 
-    document.getElementById("profile-name").innerText = "Logged In User";
-    document.getElementById("profile-email").innerText = email;
-    document.getElementById("member-since").innerText = "Member since now";
-    loggedIn = true;
-    showToast("✅ Logged in successfully");
+  let today = new Date();
 
-    document.getElementById("signup-name").value = "";
-    document.getElementById("signup-email").value = "";
-    document.getElementById("signup-password").value = "";
-  } catch (error) {
-    console.error(error);
-    if (error.name === 'AbortError') {
-      showToast("⚠️ Backend not responding. Check if server is running.");
-    } else {
-      showToast("Login request failed: " + error.message);
-    }
-  }
+  let memberSince = today.toLocaleString("en-US", {
+  month: "long",
+  year: "numeric"
+  });
+
+document.getElementById("member-since").innerText = memberSince;
+
+  loggedIn = true;
+
+  showToast(" Welcome back " + name);
+
+  document.getElementById("signup-name").value = "";
+
+  document.getElementById("signup-email").value = "";
+
+  document.getElementById("signup-password").value = "";
+
 }
 
-async function logoutUser() {
-  try {
-    await fetchWithTimeout('http://localhost:5000/api/v1/auth/logout', {
-      method: 'GET',
-      credentials: 'include',
-    });
-  } catch (error) {
-    console.warn('Logout request failed:', error);
+
+
+function logoutUser(){
+
+  if(loggedIn === false){
+
+    showToast(" No user is logged in");
+
+    return;
+
   }
+
+  document.getElementById("profile-name").innerText = "Guest User";
+
+  document.getElementById("profile-email").innerText = "Not Logged In";
+
+  document.getElementById("member-since").innerText = "";
+
+  document.getElementById("signup-name").value = "";
+
+  document.getElementById("signup-email").value = "";
+
+  document.getElementById("signup-password").value = "";
 
   loggedIn = false;
-  document.getElementById('profile-name').innerText = 'Guest User';
-  document.getElementById('profile-email').innerText = 'Not Logged In';
-  document.getElementById('member-since').innerText = '';
-  document.getElementById('signup-name').value = '';
-  document.getElementById('signup-email').value = '';
-  document.getElementById('signup-password').value = '';
-  showToast('Logged out from NoteNest');
 
-  document.getElementById('dashboard-section').style.display = 'none';
-  document.getElementById('manager-section').style.display = 'none';
-  document.getElementById('account-section').style.display = 'block';
+  showToast("Logged out from NoteNest");
 
-  document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
 }
