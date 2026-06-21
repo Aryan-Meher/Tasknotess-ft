@@ -32,6 +32,12 @@ app.use(limiter);
 
 // Logger
 app.use(morgan('combined', { stream: logger.stream }));
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Backend is running '
+  });
+});
 
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/notes', require('./routes/noteRoutes'));
