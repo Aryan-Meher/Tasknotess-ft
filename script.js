@@ -512,16 +512,13 @@ async function getCurrentUser() {
     const response = await fetch(
       "https://tasknotess-backend.onrender.com/api/v1/auth/me",
       {
-        method: "GET",
         credentials: "include"
       }
     );
 
     const data = await response.json();
 
-    console.log(data);
-
-    if(data.success){
+    if(data.success) {
 
       document.getElementById("profile-name").innerText =
         data.data.username;
@@ -529,22 +526,12 @@ async function getCurrentUser() {
       document.getElementById("profile-email").innerText =
         data.data.email;
 
-      showToast("User loaded from backend");
-
+      loggedIn = true;
     }
 
-    else{
-
-      showToast("User not logged in");
-
-    }
-
-  } catch(error){
+  } catch(error) {
 
     console.error(error);
 
-    showToast("Failed to load user");
-
   }
-
 }
