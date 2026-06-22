@@ -475,45 +475,41 @@ async function loginUser() {
     );
 
     const data = await response.json();
-  if (data.success) {
 
-  document.getElementById("profile-name").innerText =
-    data.data.username;
+    if (data.success) {
 
-  document.getElementById("profile-email").innerText =
-    data.data.email;
+      document.getElementById("profile-name").innerText =
+        data.data.username;
 
-  let memberSince = new Date(data.data.createdAt).toLocaleString(
-    "en-US",
-    { month: "long", year: "numeric" }
-  );
+      document.getElementById("profile-email").innerText =
+        data.data.email;
 
-  document.getElementById("member-since").innerText =
-    memberSince;
+      let memberSince = new Date(data.data.createdAt).toLocaleString(
+        "en-US",
+        { month: "long", year: "numeric" }
+      );
 
-  loggedIn = true;
+      document.getElementById("member-since").innerText =
+        memberSince;
 
-  showToast("🎉 Welcome Back " + data.data.username);
+      loggedIn = true;
 
-  document.getElementById("signup-email").value = "";
-  document.getElementById("signup-password").value = "";
+      showToast("🎉 Welcome Back " + data.data.username);
 
-  // IMPORTANT: delay fetch to ensure session is set
-  setTimeout(() => {
-    fetchNotes();
-  }, 300);
+      document.getElementById("signup-email").value = "";
+      document.getElementById("signup-password").value = "";
 
-}
-    
-  catch(error) {
+      setTimeout(() => {
+        fetchNotes();
+      }, 300);
 
+    }
+
+  } catch(error) {
     console.error(error);
     showToast("❌ Login failed");
-
   }
-
 }
-
 
 async function logoutUser() {
 
@@ -567,22 +563,21 @@ async function getCurrentUser() {
       document.getElementById("profile-name").innerText = data.data.username;
       document.getElementById("profile-email").innerText = data.data.email;
 
-      let memberSince = new Date(data.data.createdAt).toLocaleString(
-        "en-US",
-        { month: "long", year: "numeric" }
-      );
-
-      document.getElementById("member-since").innerText = memberSince;
-      loggedIn = true;
+      document.getElementById("member-since").innerText =
+        new Date(data.data.createdAt).toLocaleString("en-US", {
+          month: "long",
+          year: "numeric"
+        });
     }
-  } catch (error) {
-    console.error("getCurrentUser error:", error);
+
+  } catch (err) {
+    console.log(err);
   }
 }
-getCurrentUser();
 
 window.addEventListener("load", () => {
   getCurrentUser().then(() => {
     fetchNotes();
   });
 });
+getCurrentUser();
