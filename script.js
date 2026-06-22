@@ -537,7 +537,7 @@ async function getCurrentUser() {
   loggedIn = true;
 }
 
-  } catch(error) {
+  catch(error) {
 
     console.error(error);
 
