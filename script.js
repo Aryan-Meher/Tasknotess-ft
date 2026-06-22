@@ -77,6 +77,10 @@ async function addNote() {
     showToast("Server error while creating note");
   }
 }
+
+function getNoteId(button) {
+  return button.closest(".note-card").getAttribute("data-id");
+}
 function showToast(message){
 
   let toast = document.getElementById("toast-message");
@@ -105,13 +109,28 @@ function showToast(message){
 
 }
 
-function deleteNote(button){
+async function deleteNote(button) {
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
 
-  noteCard.remove();
+    const data = await res.json();
 
-  showToast("🗑️ Poof! Your note vanished into the NoteNest blackhole ");
+    if (data.success) {
+      button.closest(".note-card").remove();
+      showToast("🗑️ Poof! Your note vanished into the NoteNest blackhole");
+    } else {
+      showToast("❌ Delete failed");
+    }
+
+  } catch (err) {
+    console.log(err);
+    showToast("❌ Server error");
+  }
 }
 
 function searchNotes(){
@@ -191,39 +210,62 @@ function editNote(button){
   showToast("✏️ Edit mode activated inside NoteNest ");
 
 }
-function saveEditedNote(button){
+async function saveEditedNote(button) {
+  const card = button.closest(".note-card");
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  const newTitle = card.querySelector("#edit-title").value;
+  const newText = card.querySelector("#edit-text").value;
+  const newTag = card.querySelector(".edit-tag").value;
 
-  let newTitle = noteCard.querySelector("#edit-title").value;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        title: newTitle,
+        text: newText,
+        tag: newTag
+      })
+    });
 
-  let newText = noteCard.querySelector("#edit-text").value;
+    const data = await res.json();
 
-  let newTag = noteCard.querySelector(".edit-tag").value;
+    if (data.success) {
+      showToast("✏️ Updated successfully");
+      fetchNotes();
+    } else {
+      showToast("❌ Update failed");
+    }
 
-  noteCard.querySelector("h3").innerHTML = newTitle;
-
-  noteCard.querySelector("p").innerHTML = newText;
-
-  noteCard.querySelector(".note-tag").innerHTML = newTag;
-
-  button.innerText = "Edit";
-
-  button.setAttribute( "onclick", "editNote(this)" );
-
-  showToast("Note updated successfully inside NoteNest!!");
-
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 
-function completeTask(button){
+async function completeTask(button) {
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/complete`, {
+      method: "PUT",
+      credentials: "include"
+    });
 
-  noteCard.remove();
+    const data = await res.json();
 
-  showToast( "✅ Mission completed! Productivity level increased");
+    if (data.success) {
+      showToast("✅ Completed");
+      fetchNotes();
+    }
 
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function toggleArchive(){
@@ -238,32 +280,46 @@ function toggleArchive(){
   }
 
 }
-function archiveNote(button){
+async function archiveNote(button) {
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/archive`, {
+      method: "PUT",
+      credentials: "include"
+    });
 
-  document.getElementById( "archive-container").appendChild(noteCard);
+    const data = await res.json();
 
-  button.innerText = "Unarchive";
+    if (data.success) {
+      showToast("📂 Note sent to the galaxy archive");
+      fetchNotes();
+    }
 
-  button.setAttribute( "onclick", "unarchiveNote(this)" );
-
-  showToast("📂 Note sent to the galaxy archive ");
-
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-function unarchiveNote(button){
+async function unarchiveNote(button) {
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/unarchive`, {
+      method: "PUT",
+      credentials: "include"
+    });
 
-  document.getElementById( "main-notes-container" ).prepend(noteCard);
+    const data = await res.json();
 
-  button.innerText = "Archive";
+    if (data.success) {
+      showToast(" Note returned from space archive!!");
+      fetchNotes();
+    }
 
-  button.setAttribute( "onclick", "archiveNote(this)");
-
-  showToast( " Note returned from space archive!!");
-
+  } catch (err) {
+    console.log(err);
+  }
 }
 async function fetchNotes() {
 
@@ -314,17 +370,21 @@ function renderNotes(notes) {
     const card = document.createElement("div");
     card.className = "note-card";
 
+    // IMPORTANT
+    card.setAttribute("data-id", note._id);
+
     const colorMap = {
-      Yellow: "#FFEB3B",
-      Blue: "#3B82F6",
-      Green: "#22C55E",
-      Pink: "#EC4899"
+      Yellow: "rgba(255, 235, 59, 0.20)",
+      Blue: "rgba(59, 130, 246, 0.20)",
+      Green: "rgba(34, 197, 94, 0.20)",
+      Pink: "rgba(236, 72, 153, 0.20)"
     };
 
     card.style.background = colorMap[note.color] || "rgba(255,255,255,0.6)";
+
     card.innerHTML = `
       <h3>${note.title}</h3>
-      <p>${note.text || note.description || ""}</p>
+      <p>${note.text || ""}</p>
 
       <small class="note-tag">
         ${getTagIcon(note.tag)} ${note.tag || ""}
@@ -343,6 +403,8 @@ function renderNotes(notes) {
 
   if (loader) loader.style.display = "none";
 }
+
+
 function toggleDarkMode(){
 
   document.body.classList.toggle("dark-theme");
