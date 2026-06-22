@@ -25,14 +25,7 @@ function showSection(sectionId, button){
 }
 let loggedIn = false;
 
-function getColor(color) {
-  switch (color) {
-    case "Yellow": return "#FF8811";
-    case "Blue": return "#3B82F6";
-    case "Green": return "#22C55E";
-    case "Pink": return "#EC4899";
-    default: return "#ffffff";
-  }
+
 }
 
 async function addNote() {
