@@ -1,4 +1,13 @@
 const API_BASE = "https://tasknotess-backend.onrender.com/api/v1";
+async function handleResponse(res) {
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+}
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
@@ -212,7 +221,7 @@ function editNote(button){
 }
 async function saveEditedNote(button) {
   const card = button.closest(".note-card");
-  const id = getNoteId(button);
+  const id = card.getAttribute("data-id");
 
   const newTitle = card.querySelector("#edit-title").value;
   const newText = card.querySelector("#edit-text").value;
@@ -232,23 +241,21 @@ async function saveEditedNote(button) {
       })
     });
 
-    const data = await res.json();
+    await handleResponse(res);
 
-    if (data.success) {
-      showToast("✏️ Updated successfully");
-      fetchNotes();
-    } else {
-      showToast("❌ Update failed");
-    }
+    showToast("✏️ Note updated successfully");
+
+    // VERY IMPORTANT
+    fetchNotes(); // reload UI from backend
 
   } catch (err) {
     console.log(err);
+    showToast("❌ Update failed");
   }
 }
 
-
 async function completeTask(button) {
-  const id = getNoteId(button);
+  const id = button.closest(".note-card").getAttribute("data-id");
 
   try {
     const res = await fetch(`${API_BASE}/notes/${id}/complete`, {
@@ -256,15 +263,15 @@ async function completeTask(button) {
       credentials: "include"
     });
 
-    const data = await res.json();
+    await handleResponse(res);
 
-    if (data.success) {
-      showToast("✅ Completed");
-      fetchNotes();
-    }
+    showToast("✅ Mission completed! Productivity level increased");
+
+    fetchNotes();
 
   } catch (err) {
     console.log(err);
+    showToast("❌ Complete failed");
   }
 }
 
@@ -281,7 +288,7 @@ function toggleArchive(){
 
 }
 async function archiveNote(button) {
-  const id = getNoteId(button);
+  const id = button.closest(".note-card").getAttribute("data-id");
 
   try {
     const res = await fetch(`${API_BASE}/notes/${id}/archive`, {
@@ -289,18 +296,17 @@ async function archiveNote(button) {
       credentials: "include"
     });
 
-    const data = await res.json();
+    await handleResponse(res);
 
-    if (data.success) {
-      showToast("📂 Note sent to the galaxy archive");
-      fetchNotes();
-    }
+    showToast("📂 Note sent to the galaxy archive");
+
+    fetchNotes(); // IMPORTANT
 
   } catch (err) {
     console.log(err);
+    showToast("❌ Archive failed");
   }
 }
-
 async function unarchiveNote(button) {
   const id = getNoteId(button);
 
