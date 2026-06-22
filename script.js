@@ -308,12 +308,6 @@ function renderNotes(notes) {
   notes.forEach(note => {
     const card = document.createElement("div");
     card.className = "note-card";
-
-    // 🎨 apply color
-    if (note.color) {
-      card.style.background = note.color.toLowerCase();
-    }
-
     card.innerHTML = `
       <h3>${note.title}</h3>
 
