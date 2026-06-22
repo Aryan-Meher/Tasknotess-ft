@@ -513,9 +513,7 @@ async function logoutUser() {
 
 }
 async function getCurrentUser() {
-
   try {
-
     const response = await fetch(
       "https://tasknotess-backend.onrender.com/api/v1/auth/me",
       {
@@ -525,29 +523,20 @@ async function getCurrentUser() {
 
     const data = await response.json();
 
-    if(data.success) {
+    if (data.success) {
+      document.getElementById("profile-name").innerText = data.data.username;
+      document.getElementById("profile-email").innerText = data.data.email;
 
-  document.getElementById("profile-name").innerText = data.data.username;
+      let memberSince = new Date(data.data.createdAt).toLocaleString(
+        "en-US",
+        { month: "long", year: "numeric" }
+      );
 
-  document.getElementById("profile-email").innerText = data.data.email;
-
-  let memberSince = new Date(
-    data.data.createdAt
-  ).toLocaleString("en-US", {
-    month: "long",
-    year: "numeric"
-  });
-
-  document.getElementById("member-since").innerText =
-    memberSince;
-
-  loggedIn = true;
-}
-
-  catch(error) {
-
-    console.error(error);
-
+      document.getElementById("member-since").innerText = memberSince;
+      loggedIn = true;
+    }
+  } catch (error) {
+    console.error("getCurrentUser error:", error);
   }
 }
 getCurrentUser();
