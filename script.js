@@ -312,13 +312,15 @@ function renderNotes(notes) {
       <p>${note.content || ""}</p>
       <span class="note-tag">${note.tag || ""}</span>
 
-      <div class="actions">
-        <button onclick="editNote(this)">Edit</button>
-        <button onclick="deleteNote(this)">Delete</button>
-        <button onclick="archiveNote(this)">Archive</button>
-        <button onclick="completeTask(this)">Complete</button>
-      </div>
-    `;
+     <div class="actions">
+  <button class="edit-btn" onclick="editNote(this)">Edit</button>
+
+  <button class="delete-btn" onclick="deleteNote(this)">Delete</button>
+
+  <button class="archive-btn" onclick="archiveNote(this)">Archive</button>
+
+  <button class="complete-btn" onclick="completeTask(this)">Complete</button>
+</div>;
 
     container.appendChild(card);
   });
