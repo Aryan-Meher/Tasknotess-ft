@@ -266,7 +266,13 @@ function unarchiveNote(button){
 
 }
 async function fetchNotes() {
-  document.getElementById("notes-loading").style.display = "block";
+
+  const loader = document.getElementById("notes-loading");
+  const container = document.getElementById("main-notes-container");
+
+  // SHOW LOADER FIRST
+  loader.style.display = "block";
+
   try {
     const response = await fetch(`${API_BASE}/notes`, {
       method: "GET",
@@ -275,60 +281,50 @@ async function fetchNotes() {
 
     const data = await response.json();
 
-    console.log("FETCH NOTES:", data);
-
     if (data.success) {
       renderNotes(data.data);
     }
 
   } catch (err) {
     console.log(err);
+
+  } finally {
+
+    // SMALL DELAY TO PREVENT FLASH ISSUE
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 150);
   }
 }
 function renderNotes(notes) {
+
+  const loader = document.getElementById("notes-loading");
   const container = document.getElementById("main-notes-container");
 
   container.innerHTML = "";
 
   notes.forEach(note => {
-
     const card = document.createElement("div");
     card.className = "note-card";
 
-    // apply color styling like your UI theme
-    card.style.borderLeft = `6px solid ${
-      note.color === "Yellow" ? "#FF8811" :
-      note.color === "Blue" ? "#3B82F6" :
-      note.color === "Green" ? "#22C55E" :
-      note.color === "Pink" ? "#EC4899" :
-      "#3B82F6"
-    }`;
-
     card.innerHTML = `
       <h3>${note.title}</h3>
-
       <p>${note.content || ""}</p>
-
-      <small class="note-tag">
-        ${getTagIcon(note.tag)}
-        ${note.tag || ""}
-      </small>
+      <span class="note-tag">${note.tag || ""}</span>
 
       <div class="actions">
-
-        <button class="edit-btn" onclick="editNote(this)">Edit</button>
-
-        <button class="delete-btn" onclick="deleteNote(this)">Delete</button>
-
-        <button class="archive-btn" onclick="archiveNote(this)">Archive</button>
-
-        <button class="complete-btn" onclick="completeTask(this)">Complete</button>
-
+        <button onclick="editNote(this)">Edit</button>
+        <button onclick="deleteNote(this)">Delete</button>
+        <button onclick="archiveNote(this)">Archive</button>
+        <button onclick="completeTask(this)">Complete</button>
       </div>
     `;
 
     container.appendChild(card);
   });
+
+  // SAFETY: ensure loader is hidden immediately after render
+  loader.style.display = "none";
 }
 function toggleDarkMode(){
 
