@@ -25,20 +25,18 @@ function showSection(sectionId, button){
 }
 let loggedIn = false;
 
-async function addNote(){
-
+async function addNote() {
   let title = document.getElementById("note-title").value;
   let text = document.getElementById("note-text").value;
   let tag = document.getElementById("note-tag").value;
   let noteColor = document.getElementById("note-color").value;
 
-  if(title === "" || text === ""){
-    alert("Please fill all fields");
+  if (title === "" || text === "") {
+    showToast("Please fill all fields");
     return;
   }
 
   try {
-
     const response = await fetch(`${API_BASE}/notes`, {
       method: "POST",
       headers: {
@@ -53,25 +51,32 @@ async function addNote(){
       })
     });
 
-    const data = await response.json();
+    console.log("Status:", response.status);
 
-    if(data.success){
+    const data = await response.json();
+    console.log("Response:", data);
+
+    if (!response.ok) {
+      showToast(data.message || "Failed to create note");
+      return;
+    }
+
+    if (data.success) {
       showToast("🔥 Boom! Your note just entered the NoteNest universe , Note captured before your brain forgot it 😄");
 
       document.getElementById("note-title").value = "";
       document.getElementById("note-text").value = "";
 
-      fetchNotes(); // refresh UI
-    } else {
-      showToast("❌ Failed to create note");
+      // IMPORTANT: only if fetchNotes exists
+      if (typeof fetchNotes === "function") {
+        fetchNotes();
+      }
     }
-
-  } catch(err){
+  } catch (err) {
     console.log(err);
-    showToast("Server error");
+    showToast("Server error while creating note");
   }
 }
-
 function showToast(message){
 
   let toast = document.getElementById("toast-message");
