@@ -468,30 +468,40 @@ async function loginUser() {
 }
 
 
-function logoutUser(){
+async function logoutUser() {
 
-  if(loggedIn === false){
+  try {
 
-    showToast(" No user is logged in");
+    const response = await fetch(
+      "https://tasknotess-backend.onrender.com/api/v1/auth/logout",
+      {
+        method: "GET",
+        credentials: "include"
+      }
+    );
 
-    return;
+    const data = await response.json();
+
+    if(data.success){
+
+      document.getElementById("profile-name").innerText = "Guest User";
+
+      document.getElementById("profile-email").innerText = "Not Logged In";
+
+      document.getElementById("member-since").innerText = "";
+
+      loggedIn = false;
+
+      showToast("Logged out from NoteNest");
+
+    }
+
+  } catch(error){
+
+    console.error(error);
+
+    showToast("Logout failed");
 
   }
-
-  document.getElementById("profile-name").innerText = "Guest User";
-
-  document.getElementById("profile-email").innerText = "Not Logged In";
-
-  document.getElementById("member-since").innerText = "";
-
-  document.getElementById("signup-name").value = "";
-
-  document.getElementById("signup-email").value = "";
-
-  document.getElementById("signup-password").value = "";
-
-  loggedIn = false;
-
-  showToast("Logged out from NoteNest");
 
 }
