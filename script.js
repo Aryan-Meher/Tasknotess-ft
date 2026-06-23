@@ -1,3 +1,4 @@
+const API_BASE = "https://tasknotess-backend.onrender.com/api/v1";
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
@@ -184,39 +185,65 @@ function editNote(button){
   showToast("✏️ Edit mode activated inside NoteNest ");
 
 }
-function saveEditedNote(button){
+async function saveEditedNote(button) {
+    try {
+        const card = button.closest(".note-card");
+        const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+        let noteCard = button.parentElement.parentElement;
+        let newTitle = noteCard.querySelector("#edit-title").value;
 
-  let newTitle = noteCard.querySelector("#edit-title").value;
+        // 1. Send the update request to your server (Change the URL to match your backend)
+        const res = await fetch(`/api/v1/notes/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: newTitle })
+        });
 
-  let newText = noteCard.querySelector("#edit-text").value;
+        // 2. Now 'res' exists, so this line will work perfectly:
+        const data = await res.json(); 
 
-  let newTag = noteCard.querySelector(".edit-tag").value;
+        if (data.success) {
+            showToast("✏️ Updated successfully");
+            fetchNotes();
+        } else {
+            showToast("❌ Update failed");
+        }
 
-  noteCard.querySelector("h3").innerHTML = newTitle;
-
-  noteCard.querySelector("p").innerHTML = newText;
-
-  noteCard.querySelector(".note-tag").innerHTML = newTag;
-
-  button.innerText = "Edit";
-
-  button.setAttribute( "onclick", "editNote(this)" );
-
-  showToast("Note updated successfully inside NoteNest!!");
-
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 
-function completeTask(button){
 
-  let noteCard = button.parentElement.parentElement;
+async function completeTask(button) {
+    try {
+        // 1. Get the ID of the note
+        const id = getNoteId(button);
 
-  noteCard.remove();
+        // 2. Make the PUT request to the complete route 
+        const res = await fetch(`/api/v1/notes/${id}/complete`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-  showToast( "✅ Mission completed! Productivity level increased");
+        // 3. Parse the response data
+        const data = await res.json();
 
+        // 4. Show success or failure
+        if (data.success) {
+            showToast("⬜ Completed");
+            fetchNotes();
+        }
+
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 function toggleArchive(){
@@ -231,34 +258,60 @@ function toggleArchive(){
   }
 
 }
-function archiveNote(button){
+async function archiveNote(button) {
+    try {
+        // 1. Get the ID of the note
+        const id = getNoteId(button);
+        let noteCard = button.parentElement.parentElement;
 
-  let noteCard = button.parentElement.parentElement;
+        // 2. Add the missing fetch call to your archive endpoint
+        const res = await fetch(`/api/v1/notes/${id}/archive`, {
+            method: 'PUT', // Or whatever HTTP method your backend uses for archiving
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-  document.getElementById( "archive-container").appendChild(noteCard);
+        // 3. Parse the response
+        const data = await res.json();
 
-  button.innerText = "Unarchive";
+        // 4. Handle the UI update
+        if (data.success) {
+            showToast("📁 Note sent to the galaxy archive");
+            fetchNotes();
+        }
+        }
 
-  button.setAttribute( "onclick", "unarchiveNote(this)" );
-
-  showToast("📂 Note sent to the galaxy archive ");
-
+      catch (err) {
+        console.log(err);
+    }
 }
 
-function unarchiveNote(button){
+async function unarchiveNote(button) {
+    try {
+        // 1. Grab the ID
+        const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+        // 2. Tell the database to unarchive the note
+        const res = await fetch(`/api/v1/notes/${id}/unarchive`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-  document.getElementById( "main-notes-container" ).prepend(noteCard);
+        const data = await res.json();
 
-  button.innerText = "Archive";
+        // 3. If the database update succeeds, refresh the screen
+        if (data.success) {
+            showToast("🚀 Note returned from space archive!!");
+            fetchNotes(); // This clears out the old list and draws it correctly!
+        }
 
-  button.setAttribute( "onclick", "archiveNote(this)");
-
-  showToast( " Note returned from space archive!!");
-
+    } catch (err) {
+        console.log(err);
+    }
 }
-
 function toggleDarkMode(){
 
   document.body.classList.toggle("dark-theme");
@@ -274,19 +327,15 @@ function changeFontStyle(){
 }
 
 function changeNotesView(){
+    let view = document.getElementById("notes-view-select").value;
+    let notesContainer = document.getElementById("main-notes-container");
 
-  let view = document.getElementById("notes-view-select").value;
-
-  let notesContainer = document.getElementById( "main-notes-container" );
-
-  if(view === "List View"){ notesContainer.style.gridTemplateColumns = "1fr"; }
-
-  else{
-
-  notesContainer.style.gridTemplateColumns = "repeat(auto-fit,minmax(250px,1fr))";
-
-  }
-
+    if (view === "List View") {
+        notesContainer.style.gridTemplateColumns = "1fr";
+    } 
+    else {
+        notesContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+    }
 }
 
 function changeThemeColor(){
@@ -433,31 +482,26 @@ document.getElementById("member-since").innerText = memberSince;
 }
 
 
+function logoutUser() {
+    // 1. Optional Check: Prevent running if they aren't even logged in
+    if (loggedIn === false) {
+        showToast("⚠️ No user is logged in");
+        return;
+    }
 
-function logoutUser(){
+    // 2. Reset the profile UI text
+    document.getElementById("profile-name").innerText = "Guest User";
+    document.getElementById("profile-email").innerText = "Not Logged In";
+    document.getElementById("member-since").innerText = "";
 
-  if(loggedIn === false){
+    // 3. Clear out the input fields
+    document.getElementById("signup-name").value = "";
+    document.getElementById("signup-email").value = "";
+    document.getElementById("signup-password").value = "";
 
-    showToast(" No user is logged in");
+    // 4. Update your state variable so the app knows they left
+    loggedIn = false;
 
-    return;
-
-  }
-
-  document.getElementById("profile-name").innerText = "Guest User";
-
-  document.getElementById("profile-email").innerText = "Not Logged In";
-
-  document.getElementById("member-since").innerText = "";
-
-  document.getElementById("signup-name").value = "";
-
-  document.getElementById("signup-email").value = "";
-
-  document.getElementById("signup-password").value = "";
-
-  loggedIn = false;
-
-  showToast("Logged out from NoteNest");
-
+    // 5. Show success message
+    showToast("Logged out from NoteNest");
 }
