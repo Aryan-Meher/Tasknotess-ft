@@ -14,10 +14,11 @@ const logger = require('./utils/logger');
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: "https://notenest-lilac-alpha.vercel.app",credentials: true}));
 app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
@@ -31,6 +32,12 @@ app.use(limiter);
 
 // Logger
 app.use(morgan('combined', { stream: logger.stream }));
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Backend is running '
+  });
+});
 
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/notes', require('./routes/noteRoutes'));

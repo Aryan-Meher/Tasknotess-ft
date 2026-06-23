@@ -1,3 +1,13 @@
+const API_BASE = "https://tasknotess-backend.onrender.com/api/v1";
+async function handleResponse(res) {
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+}
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
@@ -24,52 +34,62 @@ function showSection(sectionId, button){
 }
 let loggedIn = false;
 
-function addNote(){
-
-  let title =document.getElementById("note-title").value;
-
+async function addNote() {
+  let title = document.getElementById("note-title").value;
   let text = document.getElementById("note-text").value;
-  
   let tag = document.getElementById("note-tag").value;
-
   let noteColor = document.getElementById("note-color").value;
 
-  if(title === "" || text === ""){ alert("Please fill all fields");
+  if (title === "" || text === "") {
+    showToast("Please fill all fields");
     return;
   }
 
+  try {
+    const response = await fetch(`${API_BASE}/notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        title,
+        text,
+        tag,
+        color: noteColor
+      })
+    });
 
-  let newNote = document.createElement("div");
-  newNote.classList.add( "note-card", noteColor);
-  newNote.innerHTML = `
+    console.log("Status:", response.status);
 
-    <h3>${title}</h3>
+    const data = await response.json();
+    console.log("Response:", data);
 
-    <p>${text}</p>
+    if (!response.ok) {
+      showToast(data.message || "Failed to create note");
+      return;
+    }
 
-    <small class="note-tag">${tag}</small>
-    <div class="actions">
+    if (data.success) {
+      showToast("🔥 Boom! Your note just entered the NoteNest universe , Note captured before your brain forgot it 😄");
 
-      <button class="edit-btn" onclick="editNote(this)">Edit</button>
+      document.getElementById("note-title").value = "";
+      document.getElementById("note-text").value = "";
 
-      <button class="delete-btn" onclick="deleteNote(this)">Delete</button>
-
-      <button class="archive-btn">Archive</button>
-
-      <button class="complete-btn"onclick="completeTask(this)">Complete</button>
-
-    </div>
-
-  `;
-showToast("🔥 Boom! Your note just entered the NoteNest universe , Note captured before your brain forgot it 😄");
- document.getElementById( "main-notes-container").appendChild(newNote);
-
-  document.getElementById("note-title").value = "";
-
-  document.getElementById("note-text").value = "";
-
+      // IMPORTANT: only if fetchNotes exists
+      if (typeof fetchNotes === "function") {
+        fetchNotes();
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    showToast("Server error while creating note");
+  }
 }
 
+function getNoteId(button) {
+  return button.closest(".note-card").getAttribute("data-id");
+}
 function showToast(message){
 
   let toast = document.getElementById("toast-message");
@@ -98,13 +118,28 @@ function showToast(message){
 
 }
 
-function deleteNote(button){
+async function deleteNote(button) {
+  const id = getNoteId(button);
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
 
-  noteCard.remove();
+    const data = await res.json();
 
-  showToast("🗑️ Poof! Your note vanished into the NoteNest blackhole ");
+    if (data.success) {
+      button.closest(".note-card").remove();
+      showToast("🗑️ Poof! Your note vanished into the NoteNest blackhole");
+    } else {
+      showToast("❌ Delete failed");
+    }
+
+  } catch (err) {
+    console.log(err);
+    showToast("❌ Server error");
+  }
 }
 
 function searchNotes(){
@@ -184,39 +219,60 @@ function editNote(button){
   showToast("✏️ Edit mode activated inside NoteNest ");
 
 }
-function saveEditedNote(button){
+async function saveEditedNote(button) {
+  const card = button.closest(".note-card");
+  const id = card.getAttribute("data-id");
 
-  let noteCard = button.parentElement.parentElement;
+  const newTitle = card.querySelector("#edit-title").value;
+  const newText = card.querySelector("#edit-text").value;
+  const newTag = card.querySelector(".edit-tag").value;
 
-  let newTitle = noteCard.querySelector("#edit-title").value;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        title: newTitle,
+        text: newText,
+        tag: newTag
+      })
+    });
 
-  let newText = noteCard.querySelector("#edit-text").value;
+    await handleResponse(res);
 
-  let newTag = noteCard.querySelector(".edit-tag").value;
+    showToast("✏️ Note updated successfully");
 
-  noteCard.querySelector("h3").innerHTML = newTitle;
+    // VERY IMPORTANT
+    fetchNotes(); // reload UI from backend
 
-  noteCard.querySelector("p").innerHTML = newText;
-
-  noteCard.querySelector(".note-tag").innerHTML = newTag;
-
-  button.innerText = "Edit";
-
-  button.setAttribute( "onclick", "editNote(this)" );
-
-  showToast("Note updated successfully inside NoteNest!!");
-
+  } catch (err) {
+    console.log(err);
+    showToast("❌ Update failed");
+  }
 }
 
+async function completeTask(button) {
+  const id = button.closest(".note-card").getAttribute("data-id");
 
-function completeTask(button){
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/complete`, {
+      method: "PUT",
+      credentials: "include"
+    });
 
-  let noteCard = button.parentElement.parentElement;
+    await handleResponse(res);
 
-  noteCard.remove();
+    showToast("✅ Mission completed! Productivity level increased");
 
-  showToast( "✅ Mission completed! Productivity level increased");
+    fetchNotes();
 
+  } catch (err) {
+    console.log(err);
+    showToast("❌ Complete failed");
+  }
 }
 
 function toggleArchive(){
@@ -231,33 +287,129 @@ function toggleArchive(){
   }
 
 }
-function archiveNote(button){
+async function archiveNote(button) {
+  const id = button.closest(".note-card").getAttribute("data-id");
 
-  let noteCard = button.parentElement.parentElement;
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/archive`, {
+      method: "PUT",
+      credentials: "include"
+    });
 
-  document.getElementById( "archive-container").appendChild(noteCard);
+    await handleResponse(res);
 
-  button.innerText = "Unarchive";
+    showToast("📂 Note sent to the galaxy archive");
 
-  button.setAttribute( "onclick", "unarchiveNote(this)" );
+    fetchNotes(); // IMPORTANT
 
-  showToast("📂 Note sent to the galaxy archive ");
+  } catch (err) {
+    console.log(err);
+    showToast("❌ Archive failed");
+  }
+}
+async function unarchiveNote(button) {
+  const id = getNoteId(button);
 
+  try {
+    const res = await fetch(`${API_BASE}/notes/${id}/unarchive`, {
+      method: "PUT",
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      showToast(" Note returned from space archive!!");
+      fetchNotes();
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+async function fetchNotes() {
+
+  const loader = document.getElementById("notes-loading");
+  const container = document.getElementById("main-notes-container");
+
+  // SHOW LOADER FIRST
+  loader.style.display = "block";
+
+  try {
+    const response = await fetch(`${API_BASE}/notes`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      renderNotes(data.data);
+    }
+
+  } catch (err) {
+    console.log(err);
+
+  } finally {
+
+    // SMALL DELAY TO PREVENT FLASH ISSUE
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 150);
+  }
 }
 
-function unarchiveNote(button){
+const colorMap = {
+  Yellow: "rgba(255, 235, 59, 0.25)",
+  Blue: "rgba(59, 130, 246, 0.20)",
+  Green: "rgba(34, 197, 94, 0.20)",
+  Pink: "rgba(236, 72, 153, 0.20)"
+};
 
-  let noteCard = button.parentElement.parentElement;
+function renderNotes(notes) {
+  const container = document.getElementById("main-notes-container");
+  const loader = document.getElementById("notes-loading");
 
-  document.getElementById( "main-notes-container" ).prepend(noteCard);
+  container.innerHTML = "";
 
-  button.innerText = "Archive";
+  notes.forEach(note => {
+    const card = document.createElement("div");
+    card.className = "note-card";
 
-  button.setAttribute( "onclick", "archiveNote(this)");
+    // IMPORTANT
+    card.setAttribute("data-id", note._id);
 
-  showToast( " Note returned from space archive!!");
+    const colorMap = {
+      Yellow: "rgba(255, 235, 59, 0.20)",
+      Blue: "rgba(59, 130, 246, 0.20)",
+      Green: "rgba(34, 197, 94, 0.20)",
+      Pink: "rgba(236, 72, 153, 0.20)"
+    };
 
+    card.style.background = colorMap[note.color] || "rgba(255,255,255,0.6)";
+
+    card.innerHTML = `
+      <h3>${note.title}</h3>
+      <p>${note.text || ""}</p>
+
+      <small class="note-tag">
+        ${getTagIcon(note.tag)} ${note.tag || ""}
+      </small>
+
+      <div class="actions">
+        <button class="edit-btn" onclick="editNote(this)">Edit</button>
+        <button class="delete-btn" onclick="deleteNote(this)">Delete</button>
+        <button class="archive-btn" onclick="archiveNote(this)">Archive</button>
+        <button class="complete-btn" onclick="completeTask(this)">Complete</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  if (loader) loader.style.display = "none";
 }
+
 
 function toggleDarkMode(){
 
@@ -342,122 +494,216 @@ function setReminder(){
   }, delay);
 
 }
+function getTagIcon(tag) {
 
-function signupUser(){
+  switch(tag) {
 
-  let name = document.getElementById("signup-name").value;
+    case "Priority Task":
+      return `📌`;
 
+    case "Favorite Project":
+      return `⭐`;
+
+    case "Reminder Enabled":
+      return `⏰`;
+
+    case "Upcoming Event":
+      return `🚀`;
+
+    case "Creative Idea":
+      return `💡`;
+
+    default:
+      return `📝`;
+  }
+}
+
+async function signupUser() {
+
+  let username = document.getElementById("signup-name").value;
   let email = document.getElementById("signup-email").value;
-
   let password = document.getElementById("signup-password").value;
 
-  if(name === "" || email === "" || password === ""){
+  if(username === "" || email === "" || password === ""){
     showToast("⚠️ Fill all signup fields");
     return;
   }
 
-  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  try {
 
-  if(!emailRegex.test(email)){
-    showToast("⚠️ Please enter a valid email address");
-    return;
+    const response = await fetch(
+      "https://tasknotess-backend.onrender.com/api/v1/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if(data.success){
+
+      document.getElementById("profile-name").innerText =
+        data.data.username;
+
+      document.getElementById("profile-email").innerText =
+        data.data.email;
+
+      loggedIn = true;
+
+      showToast("🎉 Welcome to NoteNest " + data.data.username);
+
+    } else {
+
+      showToast("Signup failed");
+
+    }
+
+  } catch(error) {
+
+    console.error(error);
+    showToast("Server error");
+
   }
-
-  document.getElementById("profile-name").innerText = name;
-  document.getElementById("profile-email").innerText = email;
-
-  let today = new Date();
-
-  let memberSince = today.toLocaleString("en-US", {
-    month: "long",
-    year: "numeric"
-  });
-
-  document.getElementById("member-since").innerText = memberSince;
-
-  loggedIn = true;
-
-  showToast("🎉 Welcome to NoteNest " + name);
-
-  document.getElementById("signup-name").value = "";
-  document.getElementById("signup-email").value = "";
-  document.getElementById("signup-password").value = "";
 }
-
-function loginUser(){
-
-  let name = document.getElementById("signup-name").value;
+async function loginUser() {
 
   let email = document.getElementById("signup-email").value;
-
   let password = document.getElementById("signup-password").value;
 
-  if(name === "" || email === "" || password === ""){
-
-    showToast("⚠️ Enter all login details");
-
-    return;
-
-  }
-  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if(!emailRegex.test(email)){
-    showToast("⚠️ Please enter a valid email address");
+  if(email === "" || password === "") {
+    showToast("⚠️ Enter email and password");
     return;
   }
 
+  try {
 
-  document.getElementById("profile-name").innerText = name;
+    const response = await fetch(
+      "https://tasknotess-backend.onrender.com/api/v1/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email,
+          password
+        })
+      }
+    );
 
-  document.getElementById("profile-email").innerText = email;
+    const data = await response.json();
 
-  let today = new Date();
+    if (data.success) {
 
-  let memberSince = today.toLocaleString("en-US", {
-  month: "long",
-  year: "numeric"
+      document.getElementById("profile-name").innerText =
+        data.data.username;
+
+      document.getElementById("profile-email").innerText =
+        data.data.email;
+
+      let memberSince = new Date(data.data.createdAt).toLocaleString(
+        "en-US",
+        { month: "long", year: "numeric" }
+      );
+
+      document.getElementById("member-since").innerText =
+        memberSince;
+
+      loggedIn = true;
+
+      showToast("🎉 Welcome Back " + data.data.username);
+
+      document.getElementById("signup-email").value = "";
+      document.getElementById("signup-password").value = "";
+
+      setTimeout(() => {
+        fetchNotes();
+      }, 300);
+
+    }
+
+  } catch(error) {
+    console.error(error);
+    showToast("❌ Login failed");
+  }
+}
+
+async function logoutUser() {
+
+  try {
+
+    const response = await fetch(
+      "https://tasknotess-backend.onrender.com/api/v1/auth/logout",
+      {
+        method: "GET",
+        credentials: "include"
+      }
+    );
+
+    const data = await response.json();
+
+    if(data.success){
+
+      document.getElementById("profile-name").innerText = "Guest User";
+
+      document.getElementById("profile-email").innerText = "Not Logged In";
+
+      document.getElementById("member-since").innerText = "";
+
+      loggedIn = false;
+
+      showToast("Logged out from NoteNest");
+
+    }
+
+  } catch(error){
+
+    console.error(error);
+
+    showToast("Logout failed");
+
+  }
+
+}
+async function getCurrentUser() {
+  try {
+    const response = await fetch(
+      "https://tasknotess-backend.onrender.com/api/v1/auth/me",
+      {
+        credentials: "include"
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById("profile-name").innerText = data.data.username;
+      document.getElementById("profile-email").innerText = data.data.email;
+
+      document.getElementById("member-since").innerText =
+        new Date(data.data.createdAt).toLocaleString("en-US", {
+          month: "long",
+          year: "numeric"
+        });
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+window.addEventListener("load", () => {
+  getCurrentUser().then(() => {
+    fetchNotes();
   });
-
-document.getElementById("member-since").innerText = memberSince;
-
-  loggedIn = true;
-
-  showToast(" Welcome back " + name);
-
-  document.getElementById("signup-name").value = "";
-
-  document.getElementById("signup-email").value = "";
-
-  document.getElementById("signup-password").value = "";
-
-}
-
-
-
-function logoutUser(){
-
-  if(loggedIn === false){
-
-    showToast(" No user is logged in");
-
-    return;
-
-  }
-
-  document.getElementById("profile-name").innerText = "Guest User";
-
-  document.getElementById("profile-email").innerText = "Not Logged In";
-
-  document.getElementById("member-since").innerText = "";
-
-  document.getElementById("signup-name").value = "";
-
-  document.getElementById("signup-email").value = "";
-
-  document.getElementById("signup-password").value = "";
-
-  loggedIn = false;
-
-  showToast("Logged out from NoteNest");
-
-}
+});
+getCurrentUser();

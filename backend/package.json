@@ -10,7 +10,8 @@
   "license": "ISC",
   "author": "Aryan SM",
   "main": "server.js",
-  "scripts": {
+ "scripts": {
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "devDependencies": {

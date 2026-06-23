@@ -30,6 +30,13 @@ header {
   box-shadow: 0 4px 25px rgba(255, 136, 17, 0.2);
   box-sizing: border-box;
 }
+#notes-loading {
+  display: none;
+  text-align: center;
+  margin: 15px;
+  color: gray;
+  font-size: 14px;
+}
 
 .brand-container {
   display: flex;
