@@ -278,7 +278,7 @@ function toggleArchive() {
     archiveSection.style.display = "block";
     
     // Un-comment this line ONLY if your backend separates active and archived notes queries:
-    // fetchArchivedNotes(); 
+    fetchArchivedNotes(); 
   } else {
     archiveSection.style.display = "none";
   }
