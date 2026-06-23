@@ -371,10 +371,10 @@ const colorMap = {
 
 function renderNotes(notes) {
   const container = document.getElementById("main-notes-container");
-  const archiveContainer = document.getElementById("archive-container"); // Grab the archive tray
+  const archiveContainer = document.getElementById("archive-container"); // Added this to target your archive tray
   const loader = document.getElementById("notes-loading");
 
-  // Clear both containers before rendering fresh data
+  // Clear BOTH containers before rendering updated data
   container.innerHTML = "";
   if (archiveContainer) {
     archiveContainer.innerHTML = "";
@@ -385,7 +385,6 @@ function renderNotes(notes) {
     card.className = "note-card";
     card.setAttribute("data-id", note._id);
 
-    // Your exact color map setup
     const colorMap = {
       Yellow: "rgba(255, 235, 59, 0.20)",
       Blue: "rgba(59, 130, 246, 0.20)",
@@ -394,15 +393,14 @@ function renderNotes(notes) {
     };
     card.style.background = colorMap[note.color] || "rgba(255, 255, 255, 0.6)";
 
-    // Checks the true/false field from your backend database
-    const isArchived = note.archived || false; 
+    // Identify if the note has been archived
+    const isArchived = note.archived || false;
 
-    // Swaps button to 'Unarchive' if the note is already archived
+    // Dynamically toggle button text & action based on state
     const archiveButtonHtml = isArchived 
       ? `<button class="archive-btn" onclick="unarchiveNote(this)">Unarchive</button>`
       : `<button class="archive-btn" onclick="archiveNote(this)">Archive</button>`;
 
-    // Your exact card template
     card.innerHTML = `
       <h3>${note.title}</h3>
       <p>${note.text || ""}</p>
@@ -417,7 +415,7 @@ function renderNotes(notes) {
       </div>
     `;
 
-    // ROUTE CARD TO THE CORRECT CONTAINER
+    // CRITICAL FIX: Sort the cards into their respective trays
     if (isArchived && archiveContainer) {
       archiveContainer.appendChild(card);
     } else {
