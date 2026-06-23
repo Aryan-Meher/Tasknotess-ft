@@ -364,46 +364,55 @@ const colorMap = {
 
 function renderNotes(notes) {
   const container = document.getElementById("main-notes-container");
+  const archiveContainer = document.getElementById("archive-container"); // 1. Grab the archive container
   const loader = document.getElementById("notes-loading");
 
+  // Clear out both containers before rendering updated data
   container.innerHTML = "";
+  if (archiveContainer) {
+    archiveContainer.innerHTML = "";
+  }
 
   notes.forEach(note => {
     const card = document.createElement("div");
     card.className = "note-card";
 
-    // IMPORTANT
+    // Keep your exact identifier setup
     card.setAttribute("data-id", note._id);
 
-    const colorMap = {
-      Yellow: "rgba(255, 235, 59, 0.20)",
-      Blue: "rgba(59, 130, 246, 0.20)",
-      Green: "rgba(34, 197, 94, 0.20)",
-      Pink: "rgba(236, 72, 153, 0.20)"
-    };
+    // Keep your exact background fallback choice (0.60 opacity white)
+    card.style.background = colorMap[note.color] || "rgba(255, 255, 255, 0.6)";
 
-    card.style.background = colorMap[note.color] || "rgba(255,255,255,0.6)";
+    // 2. Determine if the note uses Archive or Unarchive button setup
+    // Change 'isArchived' below to match your exact database field name (like note.archived) if needed.
+    const isArchived = note.isArchived || false; 
 
+    const archiveButtonHtml = isArchived 
+      ? `<button class="archive-btn" onclick="unarchiveNote(this)">Unarchive</button>`
+      : `<button class="archive-btn" onclick="archiveNote(this)">Archive</button>`;
+
+    // Your exact layout kept completely intact
     card.innerHTML = `
       <h3>${note.title}</h3>
       <p>${note.text || ""}</p>
-
       <small class="note-tag">
         ${getTagIcon(note.tag)} ${note.tag || ""}
       </small>
-
       <div class="actions">
         <button class="edit-btn" onclick="editNote(this)">Edit</button>
         <button class="delete-btn" onclick="deleteNote(this)">Delete</button>
-        <button class="archive-btn" onclick="archiveNote(this)">Archive</button>
+        ${archiveButtonHtml}
         <button class="complete-btn" onclick="completeTask(this)">Complete</button>
       </div>
     `;
 
-    container.appendChild(card);
+    // 3. Route the completed card to the correct DOM container
+    if (isArchived && archiveContainer) {
+      archiveContainer.appendChild(card);
+    } else {
+      container.appendChild(card);
+    }
   });
-
-  if (loader) loader.style.display = "none";
 }
 
 
