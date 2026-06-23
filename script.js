@@ -228,9 +228,9 @@ async function saveEditedNote(button) {
         let newTitle = noteCard.querySelector("#edit-title").value;
 
         // In your frontend script.js:
-const res = await fetch(`/api/v1/notes/${id}`, {
-    method: 'PUT',
-    headers: {
+      const res = await fetch(`/api/v1/notes/${id}`, {
+     method: 'PUT',
+     headers: {
         'Content-Type': 'application/json'
     },
     body: JSON.stringify({ title: newTitle })
@@ -272,18 +272,11 @@ async function completeTask(button) {
     }
 }
 
-function toggleArchive(){
-
+function toggleArchive() {
   let archiveSection = document.getElementById("archive-container");
-
-  if(archiveSection.style.display === "none" || archiveSection.style.display === ""){
-    archiveSection.style.display = "block";
-  }
-  else{
-    archiveSection.style.display = "none";
-  }
-
+  archiveSection.classList.toggle("hidden");
 }
+
 async function archiveNote(button) {
     try {
         const id = getNoteId(button);

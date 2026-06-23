@@ -599,3 +599,6 @@ footer {
 #account-section{
   display:none;
 }
+.hidden{
+  display:none !important;
+}
