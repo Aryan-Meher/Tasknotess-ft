@@ -558,7 +558,7 @@ async function signupUser() {
   let email = document.getElementById("signup-email").value;
   let password = document.getElementById("signup-password").value;
 
-  if(username === "" || email === "" || password === ""){
+  if (username === "" || email === "" || password === "") {
     showToast("⚠️ Fill all signup fields");
     return;
   }
@@ -566,12 +566,13 @@ async function signupUser() {
   try {
 
     const response = await fetch(
-      "https://tasknotess-backend.onrender.com/api/v1/auth/register",
+      `${API_BASE}/auth/register`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({
           username,
           email,
@@ -582,28 +583,30 @@ async function signupUser() {
 
     const data = await response.json();
 
-    if(data.success){
-
-      document.getElementById("profile-name").innerText =
-        data.data.username;
-
-      document.getElementById("profile-email").innerText =
-        data.data.email;
+    if (data.success) {
 
       loggedIn = true;
 
       showToast("🎉 Welcome to NoteNest " + data.data.username);
 
+      document.getElementById("signup-name").value = "";
+      document.getElementById("signup-email").value = "";
+      document.getElementById("signup-password").value = "";
+
+      await getCurrentUser();
+
+      await fetchNotes();
+
     } else {
 
-      showToast("Signup failed");
+      showToast(data.error || "Signup failed");
 
     }
 
-  } catch(error) {
+  } catch (error) {
 
     console.error(error);
-    showToast("Server error");
+    showToast("❌ Server error");
 
   }
 }
@@ -661,7 +664,7 @@ async function loginUser() {
 
       setTimeout(() => {
         fetchNotes();
-      }, 300);
+      }, 150);
 
     }
 
