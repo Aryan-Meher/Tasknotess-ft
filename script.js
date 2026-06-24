@@ -384,6 +384,11 @@ function renderNotes(notes) {
   }
 
   notes.forEach(note => {
+
+    // 📝 FIX: Skip completed tasks so they disappear from the dashboard
+    if (note.completed) {
+     return;
+    }
     const card = document.createElement("div");
     card.className = "note-card";
     card.setAttribute("data-id", note._id);
