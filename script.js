@@ -8,6 +8,31 @@ async function handleResponse(res) {
 
   return data;
 }
+
+function updateNavbar(){
+
+    if(loggedIn){
+
+        document.getElementById("login-btn").style.display="none";
+        document.getElementById("signup-btn").style.display="none";
+
+        document.getElementById("logout-btn").style.display="inline-block";
+        document.getElementById("account-btn").style.display="inline-block";
+
+    }
+
+    else{
+
+        document.getElementById("login-btn").style.display="inline-block";
+        document.getElementById("signup-btn").style.display="inline-block";
+
+        document.getElementById("logout-btn").style.display="none";
+        document.getElementById("account-btn").style.display="none";
+
+    }
+
+}
+
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
