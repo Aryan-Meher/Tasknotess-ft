@@ -58,7 +58,10 @@ nav {
   align-items: center;
   gap: 10px;
 }
-
+#logout-btn,
+#account-btn{
+    display:none;
+}
 
 .nav-btn {
   background: rgba(139, 148, 163, 0.1);
