@@ -606,6 +606,8 @@ async function signupUser() {
 
       loggedIn = true;
 
+      updateNavbar();
+
       showToast("🎉 Welcome to NoteNest " + data.data.username);
 
       document.getElementById("signup-name").value = "";
@@ -676,6 +678,8 @@ async function loginUser() {
 
       loggedIn = true;
 
+      updateNavbar();
+
       showToast("🎉 Welcome Back " + data.data.username);
 
       document.getElementById("signup-email").value = "";
@@ -725,6 +729,8 @@ async function logoutUser() {
 
       loggedIn = false;
 
+      updateNavbar();
+
       showToast("Logged out from NoteNest");
 
     }
@@ -750,6 +756,9 @@ async function getCurrentUser() {
     const data = await response.json();
 
     if (data.success) {
+
+      loggedIn = true;
+      updateNavbar();
       document.getElementById("profile-name").innerText = data.data.username;
       document.getElementById("profile-email").innerText = data.data.email;
 
@@ -759,9 +768,25 @@ async function getCurrentUser() {
           year: "numeric"
         });
     }
+    else{
+
+    loggedIn = false;
+
+    updateNavbar();
+
+    document.getElementById("profile-name").innerText = "Guest User";
+    document.getElementById("profile-email").innerText = "Not Logged In";
+    document.getElementById("member-since").innerText = "";
+
+  }
 
   } catch (err) {
     console.log(err);
+    loggedIn = false;
+    updateNavbar();
+    document.getElementById("profile-name").innerText = "Guest User";
+  document.getElementById("profile-email").innerText = "Not Logged In";
+  document.getElementById("member-since").innerText = "";
   }
 }
 
