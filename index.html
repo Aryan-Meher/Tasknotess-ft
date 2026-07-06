@@ -103,19 +103,76 @@
 
       <div class="box1">
 
-        <h2>Login / Signup</h2>
+    <h2>Account</h2>
 
-        <input type="text" id="signup-name" placeholder="Enter Your Name">
+    <div class="auth-toggle">
 
-        <input type="email" id="signup-email" placeholder="Enter Your Email">
+        <button
+            id="login-tab"
+            class="auth-tab active"
+            onclick="showLogin()">
+            Login
+        </button>
 
-        <input type="password" id="signup-password" placeholder="Enter Password">
+        <button
+            id="signup-tab"
+            class="auth-tab"
+            onclick="showSignup()">
+            Sign Up
+        </button>
 
-        <button onclick="signupUser()">Signup</button>
+    </div>
 
-        <button onclick="loginUser()">Login</button>
-      </div>
 
+    <!-- LOGIN FORM -->
+
+    <div id="login-form">
+
+        <input
+            type="email"
+            id="login-email"
+            placeholder="Enter Email">
+
+        <input
+            type="password"
+            id="login-password"
+            placeholder="Enter Password">
+
+        <button onclick="loginUser()">
+            Login
+        </button>
+
+    </div>
+
+
+    <!-- SIGNUP FORM -->
+
+    <div
+        id="signup-form"
+        style="display:none;">
+
+        <input
+            type="text"
+            id="signup-name"
+            placeholder="Enter Your Name">
+
+        <input
+            type="email"
+            id="signup-email"
+            placeholder="Enter Email">
+
+        <input
+            type="password"
+            id="signup-password"
+            placeholder="Enter Password">
+
+        <button onclick="signupUser()">
+            Sign Up
+        </button>
+
+    </div>
+
+</div>
 
       <!-- USER PROFILE -->
 
