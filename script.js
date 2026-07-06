@@ -633,8 +633,9 @@ async function signupUser() {
 }
 async function loginUser() {
 
-  let email = document.getElementById("signup-email").value;
-  let password = document.getElementById("signup-password").value;
+  let email = document.getElementById("login-email").value;
+
+  let password = document.getElementById("login-password").value;
 
   if(email === "" || password === "") {
     showToast("⚠️ Enter email and password");
@@ -682,8 +683,9 @@ async function loginUser() {
 
       showToast("🎉 Welcome Back " + data.data.username);
 
-      document.getElementById("signup-email").value = "";
-      document.getElementById("signup-password").value = "";
+      document.getElementById("login-email").value = "";
+
+      document.getElementById("login-password").value = "";
 
       setTimeout(() => {
         fetchNotes();
@@ -788,6 +790,30 @@ async function getCurrentUser() {
   document.getElementById("profile-email").innerText = "Not Logged In";
   document.getElementById("member-since").innerText = "";
   }
+}
+
+function showLogin(){
+
+    document.getElementById("login-form").style.display = "block";
+
+    document.getElementById("signup-form").style.display = "none";
+
+    document.getElementById("login-tab").classList.add("active");
+
+    document.getElementById("signup-tab").classList.remove("active");
+
+}
+
+function showSignup(){
+
+    document.getElementById("login-form").style.display = "none";
+
+    document.getElementById("signup-form").style.display = "block";
+
+    document.getElementById("signup-tab").classList.add("active");
+
+    document.getElementById("login-tab").classList.remove("active");
+
 }
 
 window.addEventListener("load", () => {
