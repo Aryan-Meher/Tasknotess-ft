@@ -8,6 +8,31 @@ async function handleResponse(res) {
 
   return data;
 }
+
+function updateNavbar(){
+
+    if(loggedIn){
+
+        document.getElementById("login-btn").style.display="none";
+        document.getElementById("signup-btn").style.display="none";
+
+        document.getElementById("logout-btn").style.display="inline-block";
+        document.getElementById("account-btn").style.display="inline-block";
+
+    }
+
+    else{
+
+        document.getElementById("login-btn").style.display="inline-block";
+        document.getElementById("signup-btn").style.display="inline-block";
+
+        document.getElementById("logout-btn").style.display="none";
+        document.getElementById("account-btn").style.display="none";
+
+    }
+
+}
+
 function showSection(sectionId, button){
 
   document.getElementById("dashboard-section").style.display = "none";
@@ -70,8 +95,8 @@ async function addNote() {
     //   return;
     // }
     if (!response.ok) {
-    showToast(data.message || "You need to log in before creating a new note.");
-    return;
+      showToast(data.message || "⚠️ You need to log in before creating a new note.");
+      return;
     }
 
     if (data.success) {
@@ -585,6 +610,8 @@ async function signupUser() {
 
       loggedIn = true;
 
+      updateNavbar();
+
       showToast("🎉 Welcome to NoteNest " + data.data.username);
 
       document.getElementById("signup-name").value = "";
@@ -613,13 +640,9 @@ async function signupUser() {
 //   let email = document.getElementById("signup-email").value;
 async function loginUser() {
 
-  if (loggedIn) {
-    showToast("A user is already logged in. Please logout first.");
-    return;
-  }
+  let email = document.getElementById("login-email").value;
 
-  let email = document.getElementById("signup-email").value;
-  let password = document.getElementById("signup-password").value;
+  let password = document.getElementById("login-password").value;
 
   if(email === "" || password === "") {
     showToast("⚠️ Enter email and password");
@@ -663,10 +686,13 @@ async function loginUser() {
 
     //   loggedIn = true;
 
-    //   showToast("🎉 Welcome Back " + data.data.username);
+      updateNavbar();
 
-    //   document.getElementById("signup-email").value = "";
-    //   document.getElementById("signup-password").value = "";
+      showToast("🎉 Welcome Back " + data.data.username);
+
+      document.getElementById("login-email").value = "";
+
+      document.getElementById("login-password").value = "";
 
     //   setTimeout(() => {
     //     fetchNotes();
@@ -709,6 +735,10 @@ async function logoutUser() {
         credentials: "include"
       }
     );
+    if(!loggedIn){
+        showToast("⚠️ No user is currently logged in");
+        return;
+    }
 
     const data = await response.json();
 
@@ -725,6 +755,8 @@ async function logoutUser() {
       document.getElementById("archive-container").innerHTML = "";
 
       loggedIn = false;
+
+      updateNavbar();
 
       showToast("Logged out from NoteNest");
 
@@ -751,6 +783,9 @@ async function getCurrentUser() {
     const data = await response.json();
 
     if (data.success) {
+
+      loggedIn = true;
+      updateNavbar();
       document.getElementById("profile-name").innerText = data.data.username;
       document.getElementById("profile-email").innerText = data.data.email;
 
@@ -760,10 +795,50 @@ async function getCurrentUser() {
           year: "numeric"
         });
     }
+    else{
+
+    loggedIn = false;
+
+    updateNavbar();
+
+    document.getElementById("profile-name").innerText = "Guest User";
+    document.getElementById("profile-email").innerText = "Not Logged In";
+    document.getElementById("member-since").innerText = "";
+
+  }
 
   } catch (err) {
     console.log(err);
+    loggedIn = false;
+    updateNavbar();
+    document.getElementById("profile-name").innerText = "Guest User";
+  document.getElementById("profile-email").innerText = "Not Logged In";
+  document.getElementById("member-since").innerText = "";
   }
+}
+
+function showLogin(){
+
+    document.getElementById("login-form").style.display = "block";
+
+    document.getElementById("signup-form").style.display = "none";
+
+    document.getElementById("login-tab").classList.add("active");
+
+    document.getElementById("signup-tab").classList.remove("active");
+
+}
+
+function showSignup(){
+
+    document.getElementById("login-form").style.display = "none";
+
+    document.getElementById("signup-form").style.display = "block";
+
+    document.getElementById("signup-tab").classList.add("active");
+
+    document.getElementById("login-tab").classList.remove("active");
+
 }
 
 window.addEventListener("load", () => {

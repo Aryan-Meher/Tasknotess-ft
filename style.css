@@ -58,7 +58,10 @@ nav {
   align-items: center;
   gap: 10px;
 }
-
+#logout-btn,
+#account-btn{
+    display:none;
+}
 
 .nav-btn {
   background: rgba(139, 148, 163, 0.1);
@@ -587,6 +590,42 @@ footer {
   align-items:center;
   gap:20px;
   flex-wrap:wrap;
+}
+
+.auth-toggle{
+
+display:flex;
+
+margin-bottom:20px;
+
+border-radius:8px;
+
+overflow:hidden;
+
+}
+
+.auth-tab{
+
+flex:1;
+
+border:none;
+
+cursor:pointer;
+
+background:#444;
+
+color:white;
+
+padding:12px;
+
+}
+
+.auth-tab.active{
+
+background:#ff8811;
+
+color:black;
+
 }
 @media(max-width:768px){
 
