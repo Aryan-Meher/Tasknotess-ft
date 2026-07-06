@@ -66,7 +66,7 @@ async function addNote() {
     console.log("Response:", data);
 
     if (!response.ok) {
-      showToast(data.message || "Failed to create note");
+      showToast(data.message || "⚠️ You need to log in before creating a new note.");
       return;
     }
 
@@ -679,6 +679,10 @@ async function logoutUser() {
         credentials: "include"
       }
     );
+    if(!loggedIn){
+        showToast("⚠️ No user is currently logged in");
+        return;
+    }
 
     const data = await response.json();
 
