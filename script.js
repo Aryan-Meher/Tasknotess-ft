@@ -65,9 +65,13 @@ async function addNote() {
     const data = await response.json();
     console.log("Response:", data);
 
+    // if (!response.ok) {
+    //   showToast(data.message || "Failed to create note");
+    //   return;
+    // }
     if (!response.ok) {
-      showToast(data.message || "Failed to create note");
-      return;
+    showToast(data.message || "You need to log in before creating a new note.");
+    return;
     }
 
     if (data.success) {
@@ -604,7 +608,15 @@ async function signupUser() {
 
   }
 }
+// async function loginUser() {
+
+//   let email = document.getElementById("signup-email").value;
 async function loginUser() {
+
+  if (loggedIn) {
+    showToast("A user is already logged in. Please logout first.");
+    return;
+  }
 
   let email = document.getElementById("signup-email").value;
   let password = document.getElementById("signup-password").value;
@@ -633,34 +645,48 @@ async function loginUser() {
 
     const data = await response.json();
 
-    if (data.success) {
+    // if (data.success) {
 
-      document.getElementById("profile-name").innerText =
-        data.data.username;
+    //   document.getElementById("profile-name").innerText =
+    //     data.data.username;
 
-      document.getElementById("profile-email").innerText =
-        data.data.email;
+    //   document.getElementById("profile-email").innerText =
+    //     data.data.email;
 
-      let memberSince = new Date(data.data.createdAt).toLocaleString(
-        "en-US",
-        { month: "long", year: "numeric" }
-      );
+    //   let memberSince = new Date(data.data.createdAt).toLocaleString(
+    //     "en-US",
+    //     { month: "long", year: "numeric" }
+    //   );
 
-      document.getElementById("member-since").innerText =
-        memberSince;
+    //   document.getElementById("member-since").innerText =
+    //     memberSince;
 
-      loggedIn = true;
+    //   loggedIn = true;
 
-      showToast("🎉 Welcome Back " + data.data.username);
+    //   showToast("🎉 Welcome Back " + data.data.username);
 
-      document.getElementById("signup-email").value = "";
-      document.getElementById("signup-password").value = "";
+    //   document.getElementById("signup-email").value = "";
+    //   document.getElementById("signup-password").value = "";
 
-      setTimeout(() => {
-        fetchNotes();
-      }, 150);
+    //   setTimeout(() => {
+    //     fetchNotes();
+    //   }, 150);
 
-    }
+    // }
+  if (data.success) {
+
+  loggedIn = true;
+
+  await getCurrentUser();
+
+  showToast("🎉 Welcome Back " + data.data.username);
+
+  document.getElementById("signup-email").value = "";
+  document.getElementById("signup-password").value = "";
+
+  await fetchNotes();
+
+}
 
   } catch(error) {
     console.error(error);
@@ -669,6 +695,10 @@ async function loginUser() {
 }
 
 async function logoutUser() {
+  if (!loggedIn) {
+  showToast("You're not logged in.");
+  return;
+}
 
   try {
 
